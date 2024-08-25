@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Login</div>
+                    <div class="card-body">
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        <form id="login-form" method="POST" action="/login">
+
+                            <div class="form-group">
+                                <label for="roomname">Room</label>
+                                <input type="text" class="form-control" id="roomname" name="roomname" value="a" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="a" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" value="a" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#login-form').submit(function(event) {
+                event.preventDefault(); // Zapobiega domyślnemu wysłaniu formularza
+
+                // Pobierz wartości z pól formularza
+                var roomname = $('#roomname').val();
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                // Haszuj hasło za pomocą SHA-512
+                var hashedPassword = CryptoJS.SHA512(password).toString(CryptoJS.enc.Hex);
+
+                var sessionDataDict = {
+                    roomName: roomname,
+                    userName: username,
+                    password: hashedPassword
+                };
+
+                var sessionText = JSON.stringify(sessionDataDict);
+                //alert("put to session text: " + sessionText);
+                sessionStorage.setItem(roomname, sessionText);
+
+                // Ustaw zahaszowane hasło w polu formularza
+                $('#password').val(hashedPassword);
+
+                // Po zahashowaniu hasła, możemy wysłać formularz
+                this.submit();
+                $('#password').val("");
+            });
+        });
+    </script>
+</body>
+</html>
